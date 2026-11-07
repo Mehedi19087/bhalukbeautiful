@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.playwright-mcp/
+.env.*
+!.env.example
+.DS_Store
+*.log
+docs/logo-review/

@@ -24,3 +24,9 @@ Playwright checked all seven main page layouts at 1440px and 390px: no horizonta
 ## Transparent logo update
 
 Replaced the background-bearing crop with an RGBA PNG cutout in header, footer, menu, and favicon. Canvas inspection confirms 1,030,038 fully transparent pixels and zero-alpha corners in the 1958×803 PNG. Removed the CSS white logo backing. Added a dark-mode display filter for dark lettering, preserving colored areas and source alpha. Reviewed desktop, mobile, menu, and dark-mode screenshots. Mobile has no horizontal overflow; production build passes. Original input remains preserved.
+
+## Vercel production deployment
+
+Live URL: https://bhalukbeautiful.vercel.app
+
+Deployment `dpl_J8jjhuyKQBZfSZdX9V8Gpvf2Udt4` reports READY in production. Playwright verified anonymous public access (HTTP 200), direct article and Bengali category URLs, category expansion from 18 to 36 stories, and the 24-link mobile menu. At 390px the homepage has no horizontal overflow. No JavaScript page errors occurred during this pass. Live desktop and mobile screenshots are stored alongside this report.

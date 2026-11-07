@@ -28,28 +28,38 @@ npm run dev
 - `/videos`: video page
 - `/about`, `/contact`, `/privacy`: branded informational placeholders
 
+## Admin console
+
+Open `/admin/login` to sign in. The console includes articles, drafts, review, categories, users, ads, Facebook, and five analytics pages. It also includes signup and OTP pages. See [the page and API map](docs/ADMIN_API_MAP.md) for routes, permissions, and checks.
+
 ## Backend integration
 
-The single adapter is `src/services/news.js`. Set `VITE_API_BASE_URL` to load `GET /site-data` instead of bundled data. The response shape is:
+The adapter in `src/services/news.js` calls the shared Django API. It defaults to:
 
-```ts
-type NewsDataset = {
-  articles: Record<string, {
-    id: string;
-    title: string;
-    image: string;
-    summary: string;
-    meta: string;
-    category: string;
-    body?: string[];
-  }>;
-  categories: Record<string, string[]>; // category name → ordered article IDs
-  homeIds: string[]; // ordered homepage stories
-  papers: string[]; // print-page image URLs
-};
+```env
+VITE_API_BASE_URL=https://newspaper-web-production.up.railway.app
+VITE_TENANT_SLUG=digontonews
 ```
 
-Reference news and print images are fixtures for visual review. Replace these with your publication's content before launch. Dates on the demo reproduce the reference capture (7 November 2026). Search works on the loaded dataset. The date selectors currently change the selected date; a backend should supply historical stories/editions. Contact and editorial information need your real details. Third-party advertising overlays were omitted.
+Copy `.env.example` to `.env` to change these values. Vite reads them at build time. Set the same values in Vercel before building there.
+
+This local project serves Diganta News at `digontonews.com`. The folder name does not identify the backend portal.
+
+Every request sends `X-Tenant-Slug: digontonews`. The slug must match an active portal record in Django admin (`/admin/`, Tenants). The live backend has an active Diganta News record with slug `digontonews`, domain `digontonews.com`, and ID `3`. Keep the slug consistent: the backend falls back to another portal when it does not recognize a slug.
+
+The frontend uses these routes:
+
+- `GET /api/news/categories/`: names and slugs for menus and sections.
+- `GET /api/news/articles/`: published stories for the homepage, categories, search, and archive.
+- `GET /api/news/articles/:slug/`: full article text, loaded when a reader opens a story.
+
+Article links use backend slugs. Dates use Bangladesh time. Search and archive filters use the loaded published stories. Requests that fail show a retry message. Empty portals show an empty news page. The app does not use reference stories as fallback data.
+
+The API has no print-edition route. The print page shows an empty state. The video page shows published article video URLs. Contact and editorial information still need your real details.
+
+Check the frontend origin in backend `CORS_ALLOWED_ORIGINS` if your server restricts browser access. The backend already allows the `X-Tenant-Slug` request header.
+
+Run `npm test` for API adapter checks, `npm run typecheck` for TypeScript checks, and `npm run build` for the production build.
 
 Reference screenshots are in `docs/reference/`. Verification screenshots are in `docs/verification/`.
 
@@ -61,7 +71,7 @@ Shared CSS tokens in `src/style.css` use the new logo's sampled cyan `#27AAE2`, 
 
 ## Runtime services
 
-The frontend downloads Tiro Bangla from Google Fonts and loads YouTube thumbnails/video from YouTube. News images used by the bundled fixtures are stored locally. The project is an independent implementation inspired by mzamin.com and is not affiliated with that publication.
+The frontend downloads Tiro Bangla from Google Fonts. The API supplies news image and video URLs. Old reference fixtures remain stored locally for design review. The project is an independent implementation inspired by mzamin.com and is not affiliated with that publication.
 
 ## Vercel deployment
 

@@ -1,0 +1,82 @@
+[
+  {
+    "filename": "admin.ads.tsx",
+    "path": "/admin/ads",
+    "title": "বিজ্ঞাপন — Diganta News Admin"
+  },
+  {
+    "filename": "admin.analytics.articles.tsx",
+    "path": "/admin/analytics/articles",
+    "title": "টপ আর্টিকেল — Diganta News Admin"
+  },
+  {
+    "filename": "admin.analytics.categories.tsx",
+    "path": "/admin/analytics/categories",
+    "title": "ক্যাটাগরি পারফরম্যান্স — Diganta News Admin"
+  },
+  {
+    "filename": "admin.analytics.referrers.tsx",
+    "path": "/admin/analytics/referrers",
+    "title": "সোর্স ব্রেকডাউন — Diganta News Admin"
+  },
+  {
+    "filename": "admin.analytics.reporters.tsx",
+    "path": "/admin/analytics/reporters",
+    "title": "রিপোর্টার পারফরম্যান্স — Diganta News Admin"
+  },
+  {
+    "filename": "admin.analytics.tsx",
+    "path": "/admin/analytics",
+    "title": "অ্যানালিটিক্স — Diganta News Admin"
+  },
+  {
+    "filename": "admin.articles.tsx",
+    "path": "/admin/articles",
+    "title": "পোস্টসমূহ — Diganta News Admin"
+  },
+  {
+    "filename": "admin.articles_.$slug.edit.tsx",
+    "path": "/admin/articles/:slug/edit",
+    "title": "পোস্ট এডিট — Diganta News Admin"
+  },
+  {
+    "filename": "admin.articles_.new.tsx",
+    "path": "/admin/articles/new",
+    "title": "নতুন পোস্ট — Diganta News Admin"
+  },
+  {
+    "filename": "admin.articles_.pending.tsx",
+    "path": "/admin/articles/pending",
+    "title": "অনুমোদন কিউ — Diganta News Admin"
+  },
+  {
+    "filename": "admin.categories.tsx",
+    "path": "/admin/categories",
+    "title": "ক্যাটাগরি — Diganta News Admin"
+  },
+  {
+    "filename": "admin.facebook.tsx",
+    "path": "/admin/facebook",
+    "title": "ফেসবুক পেজ ইন্টিগ্রেশন — Diganta News Admin"
+  },
+  {
+    "filename": "admin.login.tsx",
+    "path": "/admin/login",
+    "title": "Admin Login — Diganta News"
+  },
+  {
+    "filename": "admin.signup.tsx",
+    "path": "/admin/signup",
+    "title": "সাইন আপ — Diganta News Admin"
+  },
+  {
+    "filename": "admin.users.tsx",
+    "path": "/admin/users",
+    "title": "ব্যবহারকারী ও রোল ব্যবস্থাপনা — Diganta News Admin"
+  },
+  {
+    "filename": "admin.verify-otp.tsx",
+    "path": "/admin/verify-otp",
+    "title": "OTP যাচাই — Diganta News Admin"
+  }
+]

@@ -1,0 +1,28 @@
+body.admin-mode {background:#f8fafc;color:#111827;font-family:Arial,'Tiro Bangla',sans-serif}
+.admin-root {min-height:100vh}
+.admin-mode button {cursor:pointer}
+.admin-mode button:disabled {cursor:not-allowed}
+.admin-mode input,.admin-mode textarea {font:inherit}
+.admin-mode aside {min-width:0}
+.admin-mode main {min-width:0;flex:1}
+.admin-mode table {width:100%;font-size:14px}
+.admin-mode th,.admin-mode td {text-align:left}
+.admin-mode img {height:auto}
+.admin-mode .admin-sidebar img {width:150px;max-height:80px;object-fit:contain}
+.admin-mode .admin-sidebar {position:sticky;top:0;height:100dvh;overflow-y:auto}
+.admin-mode [role=dialog] {max-height:90dvh;overflow:auto}
+.admin-mode .admin-sidebar nav {display:flex;flex-direction:column}
+.admin-mode .admin-sidebar nav a {min-height:44px}
+.admin-mode video {max-width:100%}
+@media(max-width:767px){
+  .admin-shell {display:block}
+  .admin-mode .admin-sidebar {width:100%;height:auto;position:relative;border-right:0;border-bottom:1px solid #e2e8f0}
+  .admin-mode .admin-sidebar nav {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px}
+  .admin-mode .admin-sidebar>div:first-child {padding:12px 16px}
+  .admin-mode .admin-sidebar>div:last-child {padding:8px 12px}
+  .admin-mode main {padding:20px 12px}
+  .admin-mode [role=dialog] {width:calc(100% - 24px)}
+  .admin-mode .overflow-x-auto {max-width:100%}
+}
+
+@layer base { .admin-mode * {border-color:#e2e8f0} }

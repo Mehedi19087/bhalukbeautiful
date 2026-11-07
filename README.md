@@ -60,3 +60,7 @@ Shared CSS tokens in `src/style.css` use the new logo's sampled cyan `#27AAE2`, 
 ## Runtime services
 
 The frontend downloads Tiro Bangla from Google Fonts and loads YouTube thumbnails/video from YouTube. News images used by the bundled fixtures are stored locally. The project is an independent implementation inspired by mzamin.com and is not affiliated with that publication.
+
+## Vercel deployment
+
+`vercel.json` configures the Vite production build and SPA fallback for direct article/category URLs. Run `vercel --prod` with an authenticated Vercel CLI. Local Vercel credentials and project metadata remain untracked. Configure `VITE_API_BASE_URL` in the Vercel project when connecting a backend.

@@ -7,3 +7,5 @@ dist/
 .DS_Store
 *.log
 docs/logo-review/
+
+.vercel/

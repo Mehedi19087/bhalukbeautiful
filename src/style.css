@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700;800;900&display=swap');
 @import 'tailwindcss';
 @theme inline {
   --color-background: #ffffff;
@@ -23,7 +23,7 @@
 }
 
 :root{
-  font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;
+  font-family:'Noto Serif Bengali',serif;
   --brand-blue:#27aae2;
   --brand-blue-hover:#0875a1;
   --brand-ink:#111111;

@@ -1,4 +1,4 @@
-body.admin-mode {background:#f8fafc;color:#111827;font-family:Arial,'Tiro Bangla',sans-serif}
+body.admin-mode {background:#f8fafc;color:#111827;font-family:Arial,'Hind Siliguri','Noto Sans Bengali',sans-serif}
 .admin-root {min-height:100vh}
 .admin-mode button {cursor:pointer}
 .admin-mode button:disabled {cursor:not-allowed}

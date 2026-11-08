@@ -1,6 +1,6 @@
 import {test,afterEach} from 'node:test';
 import assert from 'node:assert/strict';
-import {apiFetch,setTokens,clearTokens,categoriesApi,articlesApi,usersApi,adsApi,analyticsApi,facebookApi} from '../src/lib/api-client.ts';
+import {apiFetch,setTokens,clearTokens,authApi,categoriesApi,articlesApi,usersApi,adsApi,analyticsApi,facebookApi} from '../src/lib/api-client.ts';
 
 const originalFetch=globalThis.fetch;
 const values=new Map();
@@ -52,4 +52,34 @@ test('empty delete responses succeed and validation errors show field messages',
  globalThis.fetch=async()=>response(204,null);assert.equal(await categoriesApi.remove('sports'),null);
  globalThis.fetch=async()=>response(400,{name:['This field is required.']});
  await assert.rejects(categoriesApi.create({name:''}),/This field is required/);
+});
+
+test('staff signup sends only email, password and role for the current portal without a session',async()=>{
+ setTokens('existing-session');
+ const controller=new AbortController();
+ globalThis.fetch=async(url,opts)=>{
+  assert.equal(new URL(url).pathname,'/api/accounts/staff/signup/');
+  assert.equal(opts.method,'POST');
+  assert.equal(opts.headers['X-Tenant-Slug'],'digontonews');
+  assert.equal(opts.headers.Authorization,undefined);
+  assert.equal(opts.signal,controller.signal);
+  assert.deepEqual(JSON.parse(opts.body),{email:'staff@example.com',password:'LongPassword123!',role:'REPORTER'});
+  return response(201,{message:'Pending owner approval.'});
+ };
+ assert.deepEqual(await authApi.signupStaff('staff@example.com','LongPassword123!','REPORTER',controller.signal),{message:'Pending owner approval.'});
+ assert.equal(values.get('dgn_access_token'),'existing-session');
+});
+
+test('pending requests and approval use authenticated portal routes',async()=>{
+ setTokens('owner-access');
+ const calls=[];
+ globalThis.fetch=async(url,opts)=>{
+  calls.push({url,opts});
+  return response(200,url.endsWith('/pending/')?[{id:9,is_pending_approval:true}]:{id:9,is_active:true,is_pending_approval:false});
+ };
+ assert.deepEqual(await usersApi.pending(),[{id:9,is_pending_approval:true}]);
+ assert.deepEqual(await usersApi.approve(9),{id:9,is_active:true,is_pending_approval:false});
+ assert.deepEqual(calls.map(call=>new URL(call.url).pathname),['/api/accounts/users/pending/','/api/accounts/users/9/approve/']);
+ assert.equal(calls[1].opts.method,'POST');
+ for(const {opts} of calls){assert.equal(opts.headers.Authorization,'Bearer owner-access');assert.equal(opts.headers['X-Tenant-Slug'],'digontonews');}
 });

@@ -30,16 +30,19 @@ function articleFromApi(article) {
     doc.querySelectorAll('script,style').forEach(node => node.remove());
     content = doc.body.textContent || '';
   }
+  const isJatiyo = article.category?.name === 'জাতীয়' || article.category?.name === 'জাতীয়' || article.category?.slug === 'national';
+  const categoryName = isJatiyo ? 'সারাদেশ' : (article.category?.name || 'অনলাইন');
+  const categorySlug = isJatiyo ? 'country' : article.category?.slug;
   const date = publicationDate(publishedAt) ? new Date(publishedAt).toLocaleDateString('bn-BD', {timeZone: 'Asia/Dhaka', dateStyle: 'long'}) : '';
   return {
     id: article.slug,
     title: article.title,
     image: article.featured_image_url || '',
     summary: article.ai_summary || '',
-    category: article.category?.name || 'অনলাইন',
-    categorySlug: article.category?.slug,
+    category: categoryName,
+    categorySlug,
     publishedAt,
-    meta: `${article.category?.name || 'অনলাইন'} | ${date}`,
+    meta: `${categoryName} | ${date}`,
     body: content.split(/\n+/).map(part => part.trim()).filter(Boolean),
     videoUrl: article.video_url || '',
   };
@@ -51,7 +54,10 @@ export async function loadNewsDataset(signal) {
     request('/api/news/articles/', signal),
   ]);
   const dataset = {articles: {}, categories: {}, categorySlugs: {}, homeIds: [], papers: []};
-  for (const category of categories) {
+  const list = categories.filter(c => c.name !== 'জাতীয়' && c.name !== 'জাতীয়' && c.slug !== 'national');
+  const saradesh = list.find(c => c.name === 'সারাদেশ' || c.slug === 'country');
+  const ordered = saradesh ? [saradesh, ...list.filter(c => c !== saradesh)] : list;
+  for (const category of ordered) {
     dataset.categories[category.name] = [];
     dataset.categorySlugs[category.name] = category.slug;
   }

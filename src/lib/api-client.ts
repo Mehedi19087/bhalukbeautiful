@@ -171,6 +171,7 @@ export type User = {
   role: Role;
   area?: string | null;
   is_active?: boolean;
+  is_pending_approval?: boolean;
   created_at?: string;
 };
 export type AuthResponse = { access: string; refresh: string; user: User };
@@ -241,6 +242,12 @@ export type Ad = {
 
 // ---------- Auth ----------
 export const authApi = {
+  signupStaff: (email: string, password: string, role: "EDITOR" | "REPORTER", signal?: AbortSignal) =>
+    apiFetch<{ message: string }>("/api/accounts/staff/signup/", {
+      method: "POST",
+      body: JSON.stringify({ email, password, role }),
+      signal,
+    }),
   signup: (email: string, password: string, signal?: AbortSignal) =>
     apiFetch<{ message: string }>("/api/accounts/signup/", {
       method: "POST",
@@ -270,6 +277,9 @@ export type CreatePortalUserData = {
 };
 
 export const usersApi = {
+  pending: () => apiFetch<User[]>("/api/accounts/users/pending/", { auth: true }),
+  approve: (id: number) =>
+    apiFetch<User>(`/api/accounts/users/${id}/approve/`, { method: "POST", auth: true }),
   list: () => apiFetch<User[]>("/api/accounts/users/", { auth: true }),
   create: (data: CreatePortalUserData) =>
     apiFetch<User>("/api/accounts/users/", {

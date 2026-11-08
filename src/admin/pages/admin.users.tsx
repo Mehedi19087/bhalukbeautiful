@@ -111,6 +111,8 @@ function formatDate(dateStr?: string) {
 function UsersManagementPage() {
   const { user: currentUser } = useAdminAuth();
   const [users, setUsers] = useState<User[]>([]);
+  const [pendingUsers, setPendingUsers] = useState<User[]>([]);
+  const [approvingId, setApprovingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -137,13 +139,18 @@ function UsersManagementPage() {
   });
 
   const isOwner = isOwnerRole(currentUser?.role);
+  const canApprove = currentUser?.role === "OWNER";
 
   const loadUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      const list = await usersApi.list();
+      const [list, pending] = await Promise.all([
+        usersApi.list(),
+        canApprove ? usersApi.pending() : Promise.resolve([]),
+      ]);
       setUsers(list);
+      setPendingUsers(pending);
     } catch (err) {
       setError(err instanceof Error ? err.message : "ব্যবহারকারীদের তালিকা লোড করতে ব্যর্থ হয়েছে");
     } finally {
@@ -157,7 +164,24 @@ function UsersManagementPage() {
     } else {
       setLoading(false);
     }
-  }, [isOwner]);
+  }, [isOwner, canApprove]);
+
+  const handleApprove = async (userId: number) => {
+    if (approvingId !== null) return;
+    setApprovingId(userId);
+    setError(null);
+    setSuccessMsg(null);
+    try {
+      const approved = await usersApi.approve(userId);
+      setPendingUsers((prev) => prev.filter((user) => user.id !== userId));
+      setUsers((prev) => [approved, ...prev.filter((user) => user.id !== userId)]);
+      setSuccessMsg(`${approved.email} অ্যাকাউন্টটি অনুমোদন করা হয়েছে।`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "অ্যাকাউন্ট অনুমোদন করা যায়নি।");
+    } finally {
+      setApprovingId(null);
+    }
+  };
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -408,6 +432,45 @@ function UsersManagementPage() {
           <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
           <div className="flex-1">{successMsg}</div>
         </div>
+      )}
+
+      {canApprove && (
+        <section aria-labelledby="pending-staff-heading" className="mb-6 bg-white border rounded-lg p-4 shadow-sm space-y-4">
+          <div>
+            <h2 id="pending-staff-heading" className="text-lg font-bold">
+              অ্যাকাউন্ট অনুমোদনের অপেক্ষায় ({pendingUsers.length})
+            </h2>
+            <p className="text-sm text-neutral-600 mt-1">
+              এই লিংক সম্পাদক ও রিপোর্টারদের দিন। শুধু আপনি এই পোর্টালের আবেদন দেখতে ও অনুমোদন করতে পারবেন।
+            </p>
+            <a href="/admin/signup" className="inline-block mt-2 text-sm text-blue-700 underline break-all">
+              {window.location.origin}/admin/signup
+            </a>
+          </div>
+          {loading ? (
+            <p className="text-sm text-neutral-500">আবেদন লোড হচ্ছে…</p>
+          ) : pendingUsers.length === 0 ? (
+            <p className="text-sm text-neutral-500">কোনো আবেদন অপেক্ষায় নেই।</p>
+          ) : (
+            <ul className="divide-y">
+              {pendingUsers.map((user) => (
+                <li key={user.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+                  <div className="min-w-0">
+                    <p className="font-medium break-all">{user.email}</p>
+                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                      {getRoleBadge(user.role)}
+                      <span className="text-xs text-neutral-500">{formatDate(user.created_at)}</span>
+                    </div>
+                  </div>
+                  <Button type="button" disabled={approvingId !== null} onClick={() => void handleApprove(user.id)}>
+                    <UserCheck className="w-4 h-4 mr-2" />
+                    {approvingId === user.id ? "অনুমোদন হচ্ছে…" : "অনুমোদন করুন"}
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       )}
 
       {/* Search Bar */}

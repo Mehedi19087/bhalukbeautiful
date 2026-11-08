@@ -39,6 +39,8 @@ function articleFromApi(article) {
     title: article.title,
     image: article.featured_image_url || '',
     summary: article.ai_summary || '',
+    aiSummary: article.ai_summary || '',
+    audioUrl: article.audio_file_url || '',
     category: categoryName,
     categorySlug,
     publishedAt,

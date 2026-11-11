@@ -62,7 +62,6 @@ function FacebookIntegrationPage() {
   const [recentArticles, setRecentArticles] = useState<ApiArticle[]>([]);
   const [loadingArticles, setLoadingArticles] = useState(false);
   const [publishingSlug, setPublishingSlug] = useState<string | null>(null);
-  const [generatingSlug, setGeneratingSlug] = useState<string | null>(null);
   const [previewCardUrl, setPreviewCardUrl] = useState<string | null>(null);
   const [tokenModalOpen, setTokenModalOpen] = useState(false);
   const [inputToken, setInputToken] = useState("");
@@ -199,44 +198,6 @@ function FacebookIntegrationPage() {
       alert((err as { message?: string }).message || "পেজ ডিসকানেক্ট করতে সমস্যা হয়েছে।");
     } finally {
       setActionId(null);
-    }
-  };
-
-  const handleGenerateCard = async (article: ApiArticle) => {
-    setGeneratingSlug(article.slug);
-    setNotification(null);
-    try {
-      const res = await facebookApi.generatePhotocard(article.slug);
-      const newCardUrl = res.share_card_url || res.photocard_url;
-      if (newCardUrl) {
-        const cacheBustedUrl = `${newCardUrl}${newCardUrl.includes("?") ? "&" : "?"}t=${Date.now()}`;
-        const results = res.results || [];
-        const fbSuccess = results.find((r) => r.status === "SUCCESS");
-        const feedback = getFacebookPublishFeedback(res);
-        const postLink = feedback.link;
-
-        setRecentArticles((prev) =>
-          prev.map((a) =>
-            a.slug === article.slug
-              ? {
-                  ...a,
-                  share_card_url: cacheBustedUrl,
-                  facebook_posted: !!fbSuccess || a.facebook_posted,
-                  facebook_post_url: postLink || a.facebook_post_url,
-                }
-              : a
-          )
-        );
-        setPreviewCardUrl(cacheBustedUrl);
-        setNotification({ ...feedback, text: `ফটোকার্ড তৈরি হয়েছে। ${feedback.text}` });
-      }
-    } catch (err: unknown) {
-      setNotification({
-        type: "error",
-        text: (err as { message?: string }).message || "ফটোকার্ড তৈরি করতে সমস্যা হয়েছে।",
-      });
-    } finally {
-      setGeneratingSlug(null);
     }
   };
 
@@ -510,7 +471,7 @@ function FacebookIntegrationPage() {
               প্রকাশিত সংবাদে ফটোকার্ড পোস্ট করুন
             </h2>
             <p className="text-xs text-neutral-500 mt-0.5">
-              নিচের যেকোনো সংবাদে ক্লিক করে সরাসরি ফটোকার্ড তৈরি ও ফেসবুক পেজে পোস্ট পাঠাতে পারেন।
+              তৈরি থাকা ফটোকার্ড দেখে সরাসরি ফেসবুক পেজে পোস্ট পাঠাতে পারেন।
             </p>
           </div>
           <Button
@@ -647,30 +608,10 @@ function FacebookIntegrationPage() {
                       {publishingSlug === article.slug ? "পোস্ট হচ্ছে…" : "ফেসবুকে পোস্ট পাঠান"}
                     </Button>
                   ) : (
-                    <Button
-                      variant="default"
-                      size="sm"
-                      disabled={generatingSlug === article.slug}
-                      onClick={() => handleGenerateCard(article)}
-                      className="text-xs flex items-center gap-1.5 bg-neutral-900 hover:bg-neutral-800 text-white font-medium shadow-sm"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                      {generatingSlug === article.slug ? "কার্ড ও পোস্ট হচ্ছে…" : "কার্ড তৈরি ও ফেসবুকে পোস্ট"}
-                    </Button>
+                    <span className="text-xs text-neutral-400 italic px-2">
+                      ফটোকার্ড নেই
+                    </span>
                   )}
-
-                  {/* Refresh / Regenerate button */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={generatingSlug === article.slug}
-                    onClick={() => handleGenerateCard(article)}
-                    className="text-xs flex items-center gap-1 text-neutral-500 hover:text-neutral-900"
-                    title="পুনরায় ফটোকার্ড তৈরি ও ফেসবুকে পাঠান"
-                  >
-                    <RefreshCw className={`w-3.5 h-3.5 ${generatingSlug === article.slug ? "animate-spin text-blue-600" : ""}`} />
-                    {article.share_card_url ? "রিফ্রেশ" : ""}
-                  </Button>
                 </div>
               </div>
             ))}
